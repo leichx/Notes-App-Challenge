@@ -1,0 +1,47 @@
+volumes:
+  679403a7__notes-app_backend_postgres_data: {}
+  679403a7__notes-app_backend_postgres_data_backups: {}
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./compose/Dockerfile
+    image: 679403a7__notes-app_backend_django
+    container_name: 679403a7__notes-app_backend_django
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.envs/.local/.django
+      - ./backend/.envs/.local/.postgres
+    ports:
+      - '${BACKEND_PORT:-8005}:8000'
+    command: /start
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./compose/Dockerfile
+    image: 679403a7__notes-app_frontend_nextjs
+    container_name: 679403a7__notes-app_frontend_nextjs
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      # Don't mount node_modules and .next to avoid conflicts
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - '${FRONTEND_PORT:-3005}:3000'
+    command: "npm run dev"
+
+  postgres:
+    image: docker.io/postgres:16
+    container_name: 679403a7__notes-app_backend_postgres
+    volumes:
+      - 679403a7__notes-app_backend_postgres_data:/var/lib/postgresql/data
+      - 679403a7__notes-app_backend_postgres_data_backups:/backups
+    env_file:
+      - ./backend/.envs/.local/.postgres

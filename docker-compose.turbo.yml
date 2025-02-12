@@ -1,0 +1,8 @@
+services:
+  backend:
+    volumes:
+      - ${CLIENT_CODEBASES_PATH}/679403a7__notes-app/backend:/app
+
+  frontend:
+    volumes:
+      - ${CLIENT_CODEBASES_PATH}/679403a7__notes-app/frontend:/app
