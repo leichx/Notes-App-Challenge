@@ -12,25 +12,8 @@ import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/context/AuthProvider';
 import withAuth from '@/hoc/withAuth';
 import { formatDate } from '@/lib/utils';
-
-
-const CategorySelector = ({ categories, categoryId, onCategoryChange }) => (
-    <Select value={categoryId} onValueChange={onCategoryChange}>
-        <SelectTrigger className="w-[240px] h-10 rounded-md border border-[#957139]">
-            <SelectValue placeholder="Select Category" />
-        </SelectTrigger>
-        <SelectContent>
-            {categories.map(category => (
-                <SelectItem key={category.id} value={category.id}>
-                    <div className="flex items-center">
-                        <Circle className="w-4 h-4 mr-2" fill={category.color} strokeWidth={0} />
-                        {category.name}
-                    </div>
-                </SelectItem>
-            ))}
-        </SelectContent>
-    </Select>
-)
+import NewCategoryDialog from '@/components/NewCategoryDialog'
+import CategorySelector from '@/components/CategorySelector'
 
 const CloseButton = () => {
     const router = useRouter()
@@ -104,12 +87,12 @@ const NoteEditorPage = () => {
 
     useEffect(() => {
         if (!title) return
-      
+
         const timeout = setTimeout(() => {
             setLastEdited(formatDate(new Date()))
             saveNote()
         }, 1000)
-      
+
         // Cleanup function:
         return () => clearTimeout(timeout)
       }, [title, content, categoryId])

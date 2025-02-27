@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import Q
 from .permissions import IsUserOrReadOnly, IsOwnerOrReadOnly
 from .serializers import CreateUserSerializer, UserSerializer, CategorySerializer
 
@@ -83,7 +83,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
-        """
-        Filter queryset to return only user's categories.
-        """
-        return Category.objects.all()
+        # Return both categories belonging to the authenticated user
+        # and global categories that have user=None
+        return Category.objects.filter(
+            Q(user=self.request.user) | Q(user=None)
+        )
+
+    def perform_create(self, serializer):
+        # Automatically associate the new category with the current user
+        serializer.save(user=self.request.user)

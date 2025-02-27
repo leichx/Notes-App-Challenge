@@ -46,7 +46,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             'id',
             'password',
             'first_name',
-            'last_name', 
+            'last_name',
             'email',
             'auth_token',
         )
@@ -60,10 +60,10 @@ class CreateUserSerializer(serializers.ModelSerializer):
             validate_email(value)
         except ValidationError:
             raise serializers.ValidationError("Invalid email format")
-        
+
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email already exists")
-        
+
         return value
 
     def create(self, validated_data):
@@ -81,11 +81,12 @@ class CategorySerializer(serializers.ModelSerializer):
     """
 
     note_count = serializers.ReadOnlyField()
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'color', 'note_count')
-        read_only_fields = ('id', 'note_count')
+        fields = ('id', 'user', 'name', 'color', 'note_count')
+        read_only_fields = ('id', 'user', 'note_count')
 
     def create(self, validated_data):
         """
